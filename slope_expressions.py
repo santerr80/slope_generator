@@ -4,7 +4,8 @@ collect_geometries(
     with_variable(
         'target_geom',
         geometry(
-			get_feature( @layer, map('КОД_КЛАССИФИКАТОРА','512220000', 'SLOPE_ID', attribute($currentfeature, 'SLOPE_ID')))
+            -- Плейсхолдеры будут заменены кодом плагина
+            get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
         ),
         if (
             @target_geom is not null,
@@ -42,7 +43,8 @@ collect_geometries(
     with_variable(
         'target_geom',
         geometry(
-            get_feature( @layer, map('КОД_КЛАССИФИКАТОРА','512220000', 'SLOPE_ID', attribute($currentfeature, 'SLOPE_ID')))
+            -- Плейсхолдеры будут заменены кодом плагина
+            get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
         ),
         if (
             @target_geom is not null,
@@ -106,13 +108,8 @@ collect_geometries(
     with_variable(
         'target_geom',
         geometry(
-            get_feature(
-                @layer,
-                map(
-                    'КОД_КЛАССИФИКАТОРА','512220000',
-                    'SLOPE_ID', attribute($currentfeature, 'SLOPE_ID')
-                )
-            )
+            -- Плейсхолдеры будут заменены кодом плагина
+            get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
         ),
         if(
             @target_geom is not null,
