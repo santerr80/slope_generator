@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>182</width>
-    <height>324</height>
+    <height>321</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,6 +60,16 @@
      <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox"/>
     </item>
     <item>
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Field cotegory style</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QgsFieldComboBox" name="mCategorizationFieldComboBox"/>
+    </item>
+    <item>
      <widget class="QLabel" name="label_layer_2">
       <property name="text">
        <string>Field ID slope (SLOPE_ID)</string>
@@ -88,16 +98,6 @@
     </item>
     <item>
      <widget class="QComboBox" name="mBottomSlopeCategoryComboBox"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Field cotegory style</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QgsFieldComboBox" name="mCategorizationFieldComboBox"/>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
