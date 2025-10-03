@@ -6,27 +6,53 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>295</width>
-    <height>321</height>
+    <width>182</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Slope Generator</string>
   </property>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>290</y>
+     <width>161</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="pushButtonApply">
+      <property name="text">
+       <string>Apply </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButtonCancel">
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>10</y>
-     <width>251</width>
-     <height>223</height>
+     <width>161</width>
+     <height>268</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="label_layer">
       <property name="text">
-       <string>Layer with line objects of slope</string>
+       <string>Line layer with slope</string>
       </property>
      </widget>
     </item>
@@ -34,9 +60,9 @@
      <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox"/>
     </item>
     <item>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="label_layer_2">
       <property name="text">
-       <string>Field with ID slope (SLOPE_ID)</string>
+       <string>Field ID slope (SLOPE_ID)</string>
       </property>
      </widget>
     </item>
@@ -44,24 +70,34 @@
      <widget class="QgsFieldComboBox" name="mFieldComboBox"/>
     </item>
     <item>
+     <widget class="QLabel" name="label_layer_3">
+      <property name="text">
+       <string>Top category</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="mTopSlopeCategoryComboBox"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_layer_4">
+      <property name="text">
+       <string>Bottom category</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="mBottomSlopeCategoryComboBox"/>
+    </item>
+    <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Style field cotegory </string>
+       <string>Field cotegory style</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QgsFieldComboBox" name="mFieldComboBoxCategorize"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_4">
-      <property name="text">
-       <string>Category for slope</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="comboBox"/>
+     <widget class="QgsFieldComboBox" name="mCategorizationFieldComboBox"/>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
@@ -72,39 +108,6 @@
     </item>
     <item>
      <widget class="QComboBox" name="comboBoxSlopeType"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>260</y>
-     <width>251</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QPushButton" name="pushButtonApply_2">
-      <property name="text">
-       <string>Apply Category</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButtonApply">
-      <property name="text">
-       <string>Apply Style</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButtonCancel">
-      <property name="text">
-       <string>Cancel</string>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>
