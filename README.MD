@@ -3,7 +3,6 @@
 A QGIS plugin that automatically generates slope symbols (hachures) based on line layers containing the top (crest) and bottom (toe) of the slopes. The styling is applied non-destructively using a geometry generator.
 
 ![Plugin in action](./assets/demo.gif)
-*(Note: Replace this link with an actual GIF demonstrating your plugin)*
 
 ## Key Features
 
