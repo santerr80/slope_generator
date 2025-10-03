@@ -53,7 +53,7 @@ For the plugin to work correctly, your data must be structured in a specific way
 
 ## Feedback and Contribution
 
-*   If you find a bug, please create an [Issue](https://github.com/santerr80/SlopeGenerator/issues) in this repository.
+*   If you find a bug, please create an [Issue](https://github.com/santerr80/slope_generator/issues) in this repository.
 *   Suggestions for improvements and new features are welcome.
 *   Pull requests to enhance the code are also welcome.
 
