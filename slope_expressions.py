@@ -63,106 +63,88 @@ collect_geometries(
 )
     """,
     "Forced slope": """
--- Собираем все созданные штрихи (основные, промежуточные и дополнительные) в одну геометрию
 collect_geometries(
-    -- Используем переменную, чтобы один раз найти геометрию парной линии
-    with_variable(
-        'target_geom',
-        -- 1. Находим геометрию объекта в ЭТОМ ЖЕ слое
-        geometry(
-            get_feature( @layer, map('КОД_КЛАССИФИКАТОРА','512220000', 'SLOPE_ID', attribute($currentfeature, 'SLOPE_ID')))
-        ),
-        -- 2. Если парная геометрия найдена...
-        if (
-            @target_geom is not null,
-            -- --- БЛОК НАСТРОЙКИ МАСШТАБА И РАЗМЕРОВ ---
-            with_variable(
-                'target_screen_mm', 2, -- Желаемое расстояние между основными штрихами НА ЭКРАНЕ (в мм)
-                with_variable(
-                    'intermediate_stroke_mm', 2.5, -- Длина первого промежуточного штриха НА ЭКРАНЕ (в мм)
-                    with_variable(
-                        'gap_after_stroke_mm', 0.5, -- <<-- НОВАЯ НАСТРОЙКА: Зазор после первого штриха НА ЭКРАНЕ (в мм)
-                        with_variable(
-                            'second_stroke_mm', 0.7, -- <<-- НОВАЯ НАСТРОЙКА: Длина второго штриха НА ЭКРАНЕ (в мм)
-                            with_variable(
-                                'step_in_map_units', (@map_scale * @target_screen_mm) / 1000, -- Шаг основных штрихов в единицах карты
-                                with_variable(
-                                    'intermediate_stroke_map_units', (@map_scale * @intermediate_stroke_mm) / 1000, -- Длина первого штриха в единицах карты
-                                    with_variable(
-                                        'gap_map_units', (@map_scale * @gap_after_stroke_mm) / 1000, -- Зазор в единицах карты
-                                        with_variable(
-                                            'second_stroke_map_units', (@map_scale * @second_stroke_mm) / 1000, -- Длина второго штриха в единицах карты
-
-                                            -- 3. Объединяем три массива геометрий
-                                            array_cat(
-                                                array_cat(
-                                                    -- --- БЛОК 1: ОСНОВНЫЕ ШТРИХИ ---
-                                                    array_foreach(
-                                                        generate_series(0, length($geometry), @step_in_map_units),
-                                                        make_line(
-                                                            line_interpolate_point($geometry, @element),
-                                                            closest_point(@target_geom, line_interpolate_point($geometry, @element))
-                                                        )
-                                                    ),
-
-                                                    -- --- БЛОК 2: ПЕРВЫЕ ПРОМЕЖУТОЧНЫЕ ШТРИХИ ---
-                                                    array_foreach(
-                                                        generate_series(@step_in_map_units / 2, length($geometry), @step_in_map_units),
-                                                        with_variable('start_pt', line_interpolate_point($geometry, @element),
-                                                        with_variable('end_pt_full', closest_point(@target_geom, line_interpolate_point($geometry, @element)),
-                                                        with_variable('full_line', make_line(@start_pt, @end_pt_full),
-                                                            make_line(
-                                                                @start_pt,
-                                                                line_interpolate_point(
-                                                                    @full_line,
-                                                                    min(@intermediate_stroke_map_units, length(@full_line))
-                                                                )
-                                                            )
-                                                        )))
-                                                    )
-                                                ),
-
-                                                -- --- БЛОК 3: ВТОРЫЕ (ДОПОЛНИТЕЛЬНЫЕ) ПРОМЕЖУТОЧНЫЕ ШТРИХИ ---
-                                                array_foreach(
-                                                    generate_series(@step_in_map_units / 2, length($geometry), @step_in_map_units),
-                                                    with_variable('start_pt', line_interpolate_point($geometry, @element),
-                                                    with_variable('end_pt_full', closest_point(@target_geom, line_interpolate_point($geometry, @element)),
-                                                    with_variable('full_line', make_line(@start_pt, @end_pt_full),
-                                                    with_variable('first_stroke_end_pos', min(@intermediate_stroke_map_units, length(@full_line)),
-                                                        -- Позиция начала второго штриха = конец первого + зазор
-                                                        with_variable('second_stroke_start_pos', @first_stroke_end_pos + @gap_map_units,
-                                                            -- Рисуем, только если начало второго штриха не выходит за пределы парной линии
-                                                            if (
-                                                                @second_stroke_start_pos < length(@full_line),
-                                                                make_line(
-                                                                    -- Начальная точка второго штриха
-                                                                    line_interpolate_point(@full_line, @second_stroke_start_pos),
-                                                                    -- Конечная точка второго штриха (ограничена парной линией)
-                                                                    line_interpolate_point(
-                                                                        @full_line,
-                                                                        min(length(@full_line), @second_stroke_start_pos + @second_stroke_map_units)
-                                                                    )
-                                                                ),
-                                                                -- Иначе возвращаем пустую геометрию
-                                                                geom_from_wkt('LINESTRING EMPTY')
-                                                            )
-                                                        )
-                                                    ))))
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            ),
-            -- Если парная геометрия не найдена, не рисуем ничего
-            make_line(make_point(0,0),make_point(0,0))
+  with_variable(
+    'vars',
+    map(
+      'target_geom', geometry(
+        get_feature(
+          @layer,
+          map(
+            'КОД_КЛАССИФИКАТОРА','512220000',
+            'SLOPE_ID', attribute($currentfeature,'SLOPE_ID')
+          )
         )
+      ),
+      'target_screen_mm', 2,
+      'intermediate_stroke_mm', 2.5,
+      'gap_after_stroke_mm', 1,
+      'second_stroke_mm', 1.5,
+      'step', (@map_scale * 2) / 1000,
+      'intermediate', (@map_scale * 2.5) / 1000,
+      'gap', (@map_scale * 1) / 1000,
+      'second', (@map_scale * 1.5) / 1000
+    ),
+
+    if(
+      map_get(@vars,'target_geom') is null,
+      make_line(make_point(0,0), make_point(0,0)),
+
+      -- объединяем три массива через вложенные array_cat
+      array_cat(
+        array_cat(
+          -- БЛОК 1: ОСНОВНЫЕ ШТРИХИ
+          array_foreach(
+            generate_series(0, length($geometry), map_get(@vars,'step')),
+            make_line(
+              line_interpolate_point($geometry, @element),
+              closest_point(map_get(@vars,'target_geom'), line_interpolate_point($geometry, @element))
+            )
+          ),
+
+          -- БЛОК 2: ПЕРВЫЕ ПРОМЕЖУТОЧНЫЕ ШТРИХИ
+          array_foreach(
+            generate_series(map_get(@vars,'step')/2, length($geometry), map_get(@vars,'step')),
+            with_variable('start', line_interpolate_point($geometry, @element),
+              with_variable('end', closest_point(map_get(@vars,'target_geom'), @start),
+                with_variable('line', make_line(@start, @end),
+                  make_line(
+                    @start,
+                    line_interpolate_point(@line, min(map_get(@vars,'intermediate'), length(@line)))
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        -- БЛОК 3: ВТОРЫЕ (ДОПОЛНИТЕЛЬНЫЕ) ПРОМЕЖУТОЧНЫЕ ШТРИХИ
+        array_foreach(
+          generate_series(map_get(@vars,'step')/2, length($geometry), map_get(@vars,'step')),
+          with_variable('start', line_interpolate_point($geometry, @element),
+            with_variable('end', closest_point(map_get(@vars,'target_geom'), @start),
+              with_variable('line', make_line(@start, @end),
+                with_variable('pos1', min(map_get(@vars,'intermediate'), length(@line)),
+                  with_variable('pos2', @pos1 + map_get(@vars,'gap'),
+                    if(
+                      @pos2 < length(@line),
+                      make_line(
+                        line_interpolate_point(@line, @pos2),
+                        line_interpolate_point(@line, min(length(@line), @pos2 + map_get(@vars,'second')))
+                      ),
+                      geom_from_wkt('LINESTRING EMPTY')
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
     )
+  )
 )
+
     """,
     "Cliff": """
 collect_geometries(
