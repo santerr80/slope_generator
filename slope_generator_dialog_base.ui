@@ -6,12 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>182</width>
-    <height>321</height>
+    <width>183</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Slope Generator</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -39,7 +45,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>

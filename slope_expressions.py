@@ -4,14 +4,14 @@ EXPRESSIONS = {
   with_variable(
     'vars',
     map(
-      -- Геометрия парной линии
+      -- Steamline geometry
       'target_geom', geometry(
         get_feature(
           @layer,
           map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__))
         )
       ),
-      -- Перевод в единицы карты
+      -- Translated into unit maps
       'step', (@map_scale * 2) / 1000, -- Шаг основных штрихов
       'intermediate', (@map_scale * 2.5) / 1000 -- Длина дополнительного штриха
     ),
@@ -22,7 +22,7 @@ EXPRESSIONS = {
 
       array_cat(
 
-        -- БЛОК 1: Основные штрихи
+        -- Block 1: Basic strokes
         array_foreach(
           generate_series(0, length($geometry), map_get(@vars,'step')),
           with_variable('pt', line_interpolate_point($geometry,@element),
@@ -33,7 +33,7 @@ EXPRESSIONS = {
           )
         ),
 
-        -- БЛОК 2: Промежуточные штрихи
+        -- Block 2: Intermediate strokes
         array_foreach(
           generate_series(map_get(@vars,'step')/2, length($geometry), map_get(@vars,'step')),
           with_variable('pt', line_interpolate_point($geometry,@element),
@@ -61,20 +61,19 @@ collect_geometries(
       'target_geom', geometry(
         get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
       ),
-      'step', (@map_scale * 2) / 1000, -- Шаг основных штрихов
-      'intermediate', (@map_scale * 2.5) / 1000, -- Длина дополнительного штриха
-      'gap', (@map_scale * 0.3) / 1000, -- Длина промежутка
-      'second', (@map_scale * 0.6) / 1000 -- Длина короткого штриха
-    ),
+      'step', (@map_scale * 2) / 1000, -- The step of the main strokes
+      'intermediate', (@map_scale * 2.5) / 1000, -- The length of the additional stroke
+      'gap', (@map_scale * 0.3) / 1000, -- The length of the gap
+      'second', (@map_scale * 0.6) / 1000 -- The length of the second short stroke
 
     if(
       map_get(@vars,'target_geom') is null,
       make_line(make_point(0,0), make_point(0,0)),
 
-      -- объединяем три массива через вложенные array_cat
+      -- We combine three arrays through nested array_cat
       array_cat(
         array_cat(
-          -- БЛОК 1: ОСНОВНЫЕ ШТРИХИ
+          -- Block 1: Basic strokes
           array_foreach(
             generate_series(0, length($geometry), map_get(@vars,'step')),
             make_line(
@@ -83,7 +82,7 @@ collect_geometries(
             )
           ),
 
-          -- БЛОК 2: ПЕРВЫЕ ПРОМЕЖУТОЧНЫЕ ШТРИХИ
+          -- Block 2: First intermediate strokes
           array_foreach(
             generate_series(map_get(@vars,'step')/2, length($geometry), map_get(@vars,'step')),
             with_variable('start', line_interpolate_point($geometry, @element),
@@ -99,7 +98,7 @@ collect_geometries(
           )
         ),
 
-        -- БЛОК 3: ВТОРЫЕ (ДОПОЛНИТЕЛЬНЫЕ) ПРОМЕЖУТОЧНЫЕ ШТРИХИ
+        -- Block 3: Second (additional) intermediate strokes
         array_foreach(
           generate_series(map_get(@vars,'step')/2, length($geometry), map_get(@vars,'step')),
           with_variable('start', line_interpolate_point($geometry, @element),
