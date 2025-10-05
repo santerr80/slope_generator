@@ -12,8 +12,8 @@ EXPRESSIONS = {
         )
       ),
       -- Translated into unit maps
-      'step', (@map_scale * 2) / 1000, -- Шаг основных штрихов
-      'intermediate', (@map_scale * 2.5) / 1000 -- Длина дополнительного штриха
+      'step', (@map_scale * 2) / 1000, -- The step of the main strokes
+      'intermediate', (@map_scale * 2.5) / 1000 -- The length of the additional stroke
     ),
 
     if(
@@ -65,7 +65,7 @@ collect_geometries(
       'intermediate', (@map_scale * 2.5) / 1000, -- The length of the additional stroke
       'gap', (@map_scale * 0.3) / 1000, -- The length of the gap
       'second', (@map_scale * 0.6) / 1000 -- The length of the second short stroke
-
+    ),
     if(
       map_get(@vars,'target_geom') is null,
       make_line(make_point(0,0), make_point(0,0)),
@@ -131,7 +131,7 @@ collect_geometries(
     with_variable(
         'target_geom',
         geometry(
-            -- Плейсхолдеры будут заменены кодом плагина
+            -- Placeholders will be replaced by plugin code
             get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
         ),
         if(
