@@ -131,7 +131,7 @@ collect_geometries(
     with_variable(
         'target_geom',
         geometry(
-            -- Placeholders will be replaced by plugin code
+            -- Placeholders will be replaced by plugin code at runtime
             get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
         ),
         if(
