@@ -1,3 +1,20 @@
+"""
+QGIS geometry generator expression templates for slope symbology.
+
+The plugin replaces placeholders in these templates at runtime to produce
+valid QGIS expressions:
+- __CAT_FIELD__: name of the categorization field (string literal)
+- __BOTTOM_CAT_VALUE__: category value representing the bottom slope side (string literal)
+- __ID_FIELD__: name of the feature id field to match bottom feature (string literal)
+- __STEP__: main stroke spacing, scaled by map scale
+- __INTERMEDIATE__: first short-stroke length
+- __GAP__: gap between first and second short strokes (forced slope)
+- __SECOND__: length of the second short stroke (forced slope)
+
+All numeric placeholders are injected as numbers (no quotes). String
+placeholders are injected as quoted strings to be valid in QGIS `map()` calls.
+"""
+
 EXPRESSIONS = {
     "Unreinforced slope": """
     collect_geometries(
@@ -150,5 +167,5 @@ collect_geometries(
         )
     )
 )
-    """
+    """,
 }

@@ -25,46 +25,69 @@
 # -*- coding: utf-8 -*-
 import os
 import random
-from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog
-from qgis.PyQt.QtGui import QColor
 
 from qgis.core import (
-    QgsProject,
+    QgsLineSymbolLayer,
+)  # Import QgsLineSymbolLayer to access its properties
+from qgis.core import QgsProperty  # Import QgsProperty
+from qgis.core import (
+    QgsCategorizedSymbolRenderer,
     QgsGeometryGeneratorSymbolLayer,
-    QgsSymbol,
     QgsLineSymbol,
     QgsMapLayerProxyModel,
-    QgsCategorizedSymbolRenderer,
     QgsRendererCategory,
     QgsSimpleLineSymbolLayer,
-    QgsProperty, # <-- Импортируем QgsProperty
-    QgsLineSymbolLayer # <-- Импортируем QgsLineSymbolLayer для доступа к константам
+    QgsSymbol,
 )
+from qgis.PyQt import uic
+from qgis.PyQt.QtGui import QColor
+from qgis.PyQt.QtWidgets import QDialog
+
 from .slope_expressions import EXPRESSIONS
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'slope_generator_dialog_base.ui'))
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "slope_generator_dialog_base.ui")
+)
+
 
 class SlopeGeneratorDialog(QDialog, FORM_CLASS):
+    """Dialog for generating slope hachure symbols on line layers.
+
+    The dialog allows you to:
+    - choose a line layer plus fields for slope pair ID and categorization;
+    - automatically apply categorized styling by the selected field;
+    - select top and bottom slope categories;
+    - choose slope type and enter hachure parameters;
+    - apply a Geometry Generator symbol layer with the expression to the chosen category.
+    """
     def __init__(self, iface, parent=None):
-        """Constructor."""
+        """Constructor.
+
+        Parameters:
+        - iface (QgsInterface): QGIS interface to interact with map and layers.
+        - parent (QWidget | None): parent widget.
+        """
         super(SlopeGeneratorDialog, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
-
-        # ... (остальной код __init__ без изменений) ...
         self.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.LineLayer)
         self.mMapLayerComboBox.layerChanged.connect(self.on_layer_changed)
-        self.mCategorizationFieldComboBox.fieldChanged.connect(self.apply_categorization)
+        self.mCategorizationFieldComboBox.fieldChanged.connect(
+            self.apply_categorization
+        )
         self.comboBoxSlopeType.addItems(EXPRESSIONS.keys())
         self.pushButtonApply.clicked.connect(self.apply_slope_style_to_category)
         self.pushButtonCancel.clicked.connect(self.close)
         self.on_layer_changed(self.mMapLayerComboBox.currentLayer())
 
-
     def on_layer_changed(self, layer):
-        """Обновляет списки полей при смене слоя."""
+        """Update field lists when the layer changes.
+
+        If no layer is selected, clear the fields.
+
+        Parameters:
+        - layer: currently selected layer in the combo box (expected line layer).
+        """
         if layer:
             self.mFieldComboBox.setLayer(layer)
             self.mCategorizationFieldComboBox.setLayer(layer)
@@ -74,9 +97,16 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.mTopSlopeCategoryComboBox.clear()
         self.mBottomSlopeCategoryComboBox.clear()
 
-
     def apply_categorization(self, field_name):
-        """Применяет к слою категорийный стиль и заполняет списки категорий."""
+        """Apply categorized style to the layer and populate category lists.
+
+        Creates a `QgsCategorizedSymbolRenderer` by the given field, assigns
+        random colors to categories, and updates values for selecting top and
+        bottom slope categories.
+
+        Parameters:
+        - field_name (str): field name used for categorization.
+        """
         layer = self.mMapLayerComboBox.currentLayer()
 
         if not layer or not field_name:
@@ -85,11 +115,13 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             return
 
         unique_values = layer.uniqueValues(layer.fields().lookupField(field_name))
-        
+
         categories = []
         for value in sorted(unique_values):
             symbol = QgsSymbol.defaultSymbol(layer.geometryType())
-            color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            color = QColor(
+                random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+            )
             symbol.setColor(color)
             category = QgsRendererCategory(value, symbol, str(value))
             categories.append(category)
@@ -104,86 +136,105 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         str_values = [str(v) for v in sorted(unique_values)]
         self.mTopSlopeCategoryComboBox.addItems(str_values)
         self.mBottomSlopeCategoryComboBox.addItems(str_values)
-        
-        self.iface.messageBar().pushMessage("Успех", f"Слой '{layer.name()}' стилизован по полю '{field_name}'", level=0)
 
+        self.iface.messageBar().pushMessage(
+            "Success", f"Layer '{layer.name()}' styled by field '{field_name}'", level=0
+        )
 
     def apply_slope_style_to_category(self):
-        """Добавляет генератор геометрии к символу выбранной категории."""
-        # --- Получаем все данные из интерфейса ---
+        """Append geometry generator to the symbol of the chosen category.
+
+        Validates inputs, builds the geometry generator expression from the
+        selected slope type and parameters, and appends a
+        `QgsGeometryGeneratorSymbolLayer` to the symbol of the "top" category.
+
+        Interface parameters used:
+        - slope pair ID field, categorization field,
+        - top and bottom category values,
+        - slope type and numeric hachure parameters (step, intermediate, gap, second, trim).
+        """
         layer = self.mMapLayerComboBox.currentLayer()
         slope_id_field = self.mFieldComboBox.currentField()
         categorization_field = self.mCategorizationFieldComboBox.currentField()
         top_slope_category_value = self.mTopSlopeCategoryComboBox.currentText()
         bottom_slope_category_value = self.mBottomSlopeCategoryComboBox.currentText()
         slope_type = self.comboBoxSlopeType.currentText()
-        
-        # --- Получаем параметры штриховки ---
+
         step = self.step.text()
         intermediate = self.intermediate.text()
         gap = self.gap.text()
         second = self.second.text()
         trim = self.trim.text()
-
-        # --- Проверки ---
-        if not all([layer, slope_id_field, categorization_field, top_slope_category_value, bottom_slope_category_value, slope_type]):
-            self.iface.messageBar().pushMessage("Ошибка", "Не все параметры выбраны", level=1)
+        if not all(
+            [
+                layer,
+                slope_id_field,
+                categorization_field,
+                top_slope_category_value,
+                bottom_slope_category_value,
+                slope_type,
+            ]
+        ):
+            self.iface.messageBar().pushMessage(
+                "Error", "Not all parameters are selected", level=1
+            )
             return
 
         try:
-            # Проверяем, что параметры штриховки являются числами
-            float(step); float(intermediate); float(gap); float(second); float(trim)
+            float(intermediate)
+            float(gap)
+            float(second)
+            float(trim)
         except ValueError:
-            self.iface.messageBar().pushMessage("Ошибка", "Параметры штриховки должны быть числами.", level=1)
+            self.iface.messageBar().pushMessage(
+                "Error", "Hatching parameters must be numeric.", level=1
+            )
             return
 
         if not isinstance(layer.renderer(), QgsCategorizedSymbolRenderer):
-            self.iface.messageBar().pushMessage("Ошибка", "Слой не имеет категорийного стиля. Примените категоризацию.", level=1)
-            return
-            
-        if top_slope_category_value == bottom_slope_category_value:
-            self.iface.messageBar().pushMessage("Внимание", "Категории верха и низа откоса не должны совпадать", level=2)
+            self.iface.messageBar().pushMessage(
+                "Error",
+                "Layer is not categorized. Apply categorization first.",
+                level=1,
+            )
             return
 
-        # --- Подготовка основного выражения (без обрезки) ---
+        if top_slope_category_value == bottom_slope_category_value:
+            self.iface.messageBar().pushMessage(
+                "Warning", "Top and bottom slope categories must differ", level=2
+            )
+            return
         expression_template = EXPRESSIONS.get(slope_type)
-        final_expression = expression_template.replace("__CAT_FIELD__", f"'{categorization_field}'")
-        final_expression = final_expression.replace("__BOTTOM_CAT_VALUE__", f"'{bottom_slope_category_value}'")
-        final_expression = final_expression.replace("__ID_FIELD__", f"'{slope_id_field}'")
+        final_expression = expression_template.replace(
+            "__CAT_FIELD__", f"'{categorization_field}'"
+        )
+        final_expression = final_expression.replace(
+            "__BOTTOM_CAT_VALUE__", f"'{bottom_slope_category_value}'"
+        )
+        final_expression = final_expression.replace(
+            "__ID_FIELD__", f"'{slope_id_field}'"
+        )
         final_expression = final_expression.replace("__STEP__", step)
         final_expression = final_expression.replace("__INTERMEDIATE__", intermediate)
         final_expression = final_expression.replace("__GAP__", gap)
         final_expression = final_expression.replace("__SECOND__", second)
-
-        # --- Создание основного генератора геометрии ---
-        geometry_generator = QgsGeometryGeneratorSymbolLayer.create({'symbol_type': 'Line'})
+        geometry_generator = QgsGeometryGeneratorSymbolLayer.create(
+            {"symbol_type": "Line"}
+        )
         geometry_generator.setGeometryExpression(final_expression)
 
-        # --- Создание вложенного символа с настройкой ОБРЕЗКИ ---
-        
-        # 1. Создаем слой простой линии
-        simple_line_layer = QgsSimpleLineSymbolLayer(color=QColor('black'), width=0.26)
-        
-        # 2. Создаем выражение для обрезки конца линии.
-        #    Оно вычислит расстояние обрезки в единицах карты на основе масштаба.
+        simple_line_layer = QgsSimpleLineSymbolLayer(color=QColor("black"), width=0.26)
         trim_expression_string = f"{trim}"
-
-        # 3. Устанавливаем для слоя линии свойство "Смещение конечной точки" (trim_end)
-        #    с помощью data-defined override (переопределения на основе данных).
         prop = QgsProperty.fromExpression(trim_expression_string)
-        simple_line_layer.setDataDefinedProperty(QgsLineSymbolLayer.PropertyTrimEnd, prop)
-
-        # 4. Создаем символ-контейнер для нашего настроенного слоя линии.
+        simple_line_layer.setDataDefinedProperty(
+            QgsLineSymbolLayer.PropertyTrimEnd, prop
+        )
         sub_symbol = QgsLineSymbol([simple_line_layer])
-        
-        # 5. Устанавливаем этот символ как вложенный для генератора геометрии.
+
         geometry_generator.setSubSymbol(sub_symbol)
-
-
-        # --- Применяем созданный сложный стиль к категории ---
         new_categories = []
         original_renderer = layer.renderer()
-        
+
         for cat in original_renderer.categories():
             if str(cat.value()) == top_slope_category_value:
                 new_symbol = cat.symbol().clone()
@@ -192,13 +243,19 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
                 new_categories.append(new_cat)
             else:
                 new_categories.append(cat)
-                
-        new_renderer = QgsCategorizedSymbolRenderer(categorization_field, new_categories)
+
+        new_renderer = QgsCategorizedSymbolRenderer(
+            categorization_field, new_categories
+        )
         layer.setRenderer(new_renderer)
-        
+
         layer.triggerRepaint()
         self.iface.layerTreeView().refreshLayerSymbology(layer.id())
 
-        self.iface.messageBar().pushMessage("Успех", f"Стиль откоса '{slope_type}' применен к категории '{top_slope_category_value}'", level=0)
-        
+        self.iface.messageBar().pushMessage(
+            "Success",
+            f"Slope style '{slope_type}' applied to category '{top_slope_category_value}'",
+            level=0,
+        )
+
         self.close()

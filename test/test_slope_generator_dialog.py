@@ -8,17 +8,17 @@
 
 """
 
-__author__ = 'santerr80@gmail.com'
-__date__ = '2025-10-02'
-__copyright__ = 'Copyright 2025, santerr80'
+__author__ = "santerr80@gmail.com"
+__date__ = "2025-10-02"
+__copyright__ = "Copyright 2025, santerr80"
 
 import unittest
 
-from qgis.PyQt.QtGui import QDialogButtonBox, QDialog
+from qgis.PyQt.QtGui import QDialog, QDialogButtonBox
+from utilities import get_qgis_app
 
 from slope_generator_dialog import SlopeGeneratorDialog
 
-from utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
 
 
@@ -48,8 +48,8 @@ class SlopeGeneratorDialogTest(unittest.TestCase):
         result = self.dialog.result()
         self.assertEqual(result, QDialog.Rejected)
 
+
 if __name__ == "__main__":
     suite = unittest.makeSuite(SlopeGeneratorDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-

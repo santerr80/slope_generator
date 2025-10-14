@@ -21,19 +21,36 @@
  *                                                                         *
  ***************************************************************************/
 """
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+import os.path
+
+from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
 # Initialize Qt resources from file resources.py
 from .resources import *
+
 # Import the code for the dialog
 from .slope_generator_dialog import SlopeGeneratorDialog
-import os.path
 
 
 class SlopeGenerator:
-    """QGIS Plugin Implementation."""
+    """QGIS Plugin Implementation.
+
+    This class integrates the plugin into QGIS UI:
+    - registers menu and toolbar actions;
+    - opens the main dialog window on trigger;
+    - manages translator and lifetime of the dialog instance.
+
+    Attributes:
+    - iface: reference to the QGIS interface (`QgsInterface`).
+    - plugin_dir: plugin directory path.
+    - translator: `QTranslator` installed when a locale is available.
+    - actions: list of created QAction instances to remove on unload.
+    - menu: localized plugin menu label.
+    - first_start: first-run flag for the current QGIS session.
+    - dlg: instance of `SlopeGeneratorDialog` or None when closed.
+    """
 
     def __init__(self, iface):
         """Constructor.
@@ -48,11 +65,10 @@ class SlopeGenerator:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
-        locale = QSettings().value('locale/userLocale')[0:2]
+        locale = QSettings().value("locale/userLocale")[0:2]
         locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            'SlopeGenerator_{}.qm'.format(locale))
+            self.plugin_dir, "i18n", "SlopeGenerator_{}.qm".format(locale)
+        )
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -61,12 +77,12 @@ class SlopeGenerator:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&Slope Generator')
+        self.menu = self.tr("&Slope Generator")
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-        
+
         self.dlg = None
 
     # noinspection PyMethodMayBeStatic
@@ -82,8 +98,7 @@ class SlopeGenerator:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('SlopeGenerator', message)
-
+        return QCoreApplication.translate("SlopeGenerator", message)
 
     def add_action(
         self,
@@ -95,7 +110,8 @@ class SlopeGenerator:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+    ):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -130,8 +146,7 @@ class SlopeGenerator:
         :param whats_this: Optional text to show in the status bar when the
             mouse pointer hovers over the action.
 
-        :returns: The action that was created. Note that the action is also
-            added to self.actions list.
+        :returns: The created action; it is also stored in `self.actions`.
         :rtype: QAction
         """
 
@@ -151,9 +166,7 @@ class SlopeGenerator:
             self.iface.addToolBarIcon(action)
 
         if add_to_menu:
-            self.iface.addPluginToMenu(
-                self.menu,
-                action)
+            self.iface.addPluginToMenu(self.menu, action)
 
         self.actions.append(action)
 
@@ -162,39 +175,38 @@ class SlopeGenerator:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/slope_generator/icon.png'
+        icon_path = ":/plugins/slope_generator/icon.png"
         self.add_action(
             icon_path,
-            text=self.tr(u'Slope sign generator'),
+            text=self.tr("Slope sign generator"),
             callback=self.run,
-            parent=self.iface.mainWindow())
+            parent=self.iface.mainWindow(),
+        )
 
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
-            self.iface.removePluginMenu(
-                self.tr(u'&Slope Generator'),
-                action)
+            self.iface.removePluginMenu(self.tr("&Slope Generator"), action)
             self.iface.removeToolBarIcon(action)
 
-
-# В файле slope_generator.py, внутри класса SlopeGenerator
+    # В файле slope_generator.py, внутри класса SlopeGenerator
 
     def run(self):
-        """Run method that performs all the real work."""
+        """Show the main dialog, creating it if needed.
 
-        # Проверяем, был ли диалог создан.
-        # Если нет (первый запуск) или он был закрыт (и стал None), создаем его заново.
+        Keeps a single dialog instance and restores focus when re-triggered.
+        """
+
+        # Create dialog if needed (first run or after it was closed)
         if self.dlg is None:
             self.dlg = SlopeGeneratorDialog(self.iface)
 
-        # Теперь мы точно знаем, что self.dlg существует. Показываем его.
+        # Now we are sure the dialog exists. Show it.
         self.dlg.show()
 
-        # Эта часть нужна, чтобы при повторном клике окно не пряталось за QGIS
+        # Ensure the dialog stays on top when re-triggered
         self.dlg.raise_()
         self.dlg.activateWindow()

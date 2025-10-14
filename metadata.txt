@@ -10,7 +10,7 @@ version=0.2.0
 author=santerr80
 email=santerr80@gmail.com
 
-about=This plogin for generate slope sign.
+about=This plugin generates slope hachures via QGIS Geometry Generator. Non-destructive styling.
 
 tracker=https://github.com/santerr80/slope_generator/issues
 repository=https://github.com/santerr80/slope_generator.git
@@ -20,7 +20,7 @@ repository=https://github.com/santerr80/slope_generator.git
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.2.0 added setup hatching tools.
+changelog=0.2.0: Added hatching setup tools and Trim parameter support. Improved UI and categorization logic.
 
 # Tags are comma separated with spaces allowed
 tags=python, style, layer
