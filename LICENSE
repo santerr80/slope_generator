@@ -2,7 +2,7 @@
 name=Slope Generator
 qgisMinimumVersion=3.34
 description=Plugin for generate slope sing
-version=0.2
+version=0.3
 author=santerr1980
 email=santerr80@gmail.com
 license=GPL v3
