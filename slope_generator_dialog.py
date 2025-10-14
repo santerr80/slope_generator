@@ -166,7 +166,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         
         # 2. Создаем выражение для обрезки конца линии.
         #    Оно вычислит расстояние обрезки в единицах карты на основе масштаба.
-        trim_expression_string = f"(@map_scale * {trim}) / 1000"
+        trim_expression_string = f"{trim}"
 
         # 3. Устанавливаем для слоя линии свойство "Смещение конечной точки" (trim_end)
         #    с помощью data-defined override (переопределения на основе данных).
