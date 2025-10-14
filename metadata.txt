@@ -4,13 +4,13 @@
 
 [general]
 name=Slope Generator
-qgisMinimumVersion=3.34
-description=Plugin for generate slope sing
-version=0.1
+qgisMinimumVersion=3.00
+description=Plugin for generate dynamic slope hatching
+version=0.2.0
 author=santerr80
 email=santerr80@gmail.com
 
-about=This plogin for generate slope sign.
+about=This plugin generates slope hachures via QGIS Geometry Generator. Non-destructive styling.
 
 tracker=https://github.com/santerr80/slope_generator/issues
 repository=https://github.com/santerr80/slope_generator.git
@@ -20,16 +20,16 @@ repository=https://github.com/santerr80/slope_generator.git
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=0.2.0: Added hatching setup tools and Trim parameter support. Improved UI and categorization logic.
 
 # Tags are comma separated with spaces allowed
 tags=python, style, layer
 
-homepage=http://homepage
+homepage=https://github.com/santerr80/slope_generator
 category=Plugins
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
@@ -40,7 +40,7 @@ deprecated=False
 # plugin_dependencies=
 
 Category of the plugin: Raster, Vector, Database or Web
-# category=
+category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False

@@ -1,67 +1,95 @@
-# QGIS Slope Generator Plugin
+## QGIS Plugin: Slope Generator
 
-A QGIS plugin that automatically generates slope symbols (hachures) based on line layers containing the top (crest) and bottom (toe) of the slopes. The styling is applied non-destructively using a geometry generator.
+This plugin automatically generates slope hachures based on line features that represent the top (crest) and bottom (toe) of a slope. Styling is non-destructive via Geometry Generator; your source data remains unchanged.
 
-![Plugin in action](./assets/demo.gif)
+![Plugin demo](./assets/demo.gif)
 
-## Key Features
+### Key features
 
-*   **Automatic Styling:** Creates complex slope symbols in just a few clicks.
-*   **Non-Destructive Editing:** Uses QGIS's **Geometry Generator**, leaving your original data untouched.
-*   **Flexible Configuration:** Allows the user to select the layer, as well as the fields for slope identification and categorization.
-*   **Multiple Slope Types:** Includes several preset styles (e.g., unreinforced, reinforced, cliff) that can be easily extended.
-*   **Dynamic Display:** The symbols adapt to the current map scale.
-*   **Quick Categorization:** Automatically applies a unique style to the layer based on the values in a chosen attribute field.
+- **Automatic hachures**: create complex slope symbols in a few clicks.
+- **Non-destructive styling**: uses the **Geometry Generator**; source features are not modified.
+- **Flexible configuration**: choose the layer, the slope pair ID field, and a categorization field.
+- **Built-in slope types**: “Unreinforced slope”, “Forced slope”, “Cliff”. You can extend the set.
+- **Scale awareness**: stroke lengths and spacing adapt to the current map scale.
+- **Quick categorization**: categories are created from a chosen field and colored for convenience.
 
-## Data Requirements
+### Data requirements
 
-For the plugin to work correctly, your data must be structured in a specific way.
+1. **Single line layer**: both crest and toe lines must be stored in the same vector line layer.
+2. **Categorization field**: an attribute distinguishing crest/toe (e.g., `TYPE` with values `top`/`bottom`, or code values).
+3. **Slope pair ID field**: a unique identifier for the crest–toe pair (e.g., `SLOPE_ID`) so lines can be linked.
 
-1.  **Single Line Layer:** All lines (both the top/crest and bottom/toe of the slopes) must be in a **single** vector layer.
-2.  **Categorization Field:** The layer must have an attribute field that clearly distinguishes lines as either "top of slope" (crest) or "bottom of slope" (toe). For example, a `TYPE` field with values `top` and `bottom`, or a `CODE` field with values like `512210000` and `512220000`.
-3.  **Unique Slope ID Field:** The layer must have a field containing a unique identifier for **each pair** of top and bottom lines. This allows the plugin to correctly link each top line to its corresponding bottom line.
+Example attribute table:
 
-#### Example Attribute Table
+| id | geometry   | TYPE     | SLOPE_ID |
+| -- | ---------- | -------- | -------- |
+| 1  | LineString | top      | 101      |
+| 2  | LineString | bottom   | 101      |
+| 3  | LineString | top      | 102      |
+| 4  | LineString | bottom   | 102      |
 
-| id | geometry   | TYPE   | SLOPE_ID |
-| -- | ---------- | ------ | -------- |
-| 1  | LineString | `top`  | `101`    |
-| 2  | LineString | `bottom` | `101`    |
-| 3  | LineString | `top`  | `102`    |
-| 4  | LineString | `bottom` | `102`    |
+### Supported slope types
 
-## Workflow
+- **Unreinforced slope**: base strokes plus short intermediate strokes.
+- **Forced slope**: base strokes plus two series of short strokes with a gap.
+- **Cliff**: base strokes only.
 
-1.  **Prepare your data** according to the requirements above.
-2.  **Open the plugin** by clicking its icon in the QGIS toolbar.
-3.  **Select the line layer** that contains your slopes.
-4.  **Select the Slope ID field** (e.g., `SLOPE_ID` from the example).
-5.  **Select the field for styling/categorization** (e.g., `TYPE`). The plugin will automatically color the layer based on the unique values in this field.
-6.  In the **"Top of Slope Category"** and **"Bottom of Slope Category"** dropdowns, choose the appropriate values that were populated after categorization.
-7.  **Choose the desired slope style** (e.g., "Unreinforced slope dynamic").
-8.  Click the **"Apply"** button. The style will be added to the selected "Top of Slope" category.
+Types are implemented with QGIS expressions and applied to the “crest” category, matching it with the “toe” by the pair ID.
 
-## Installation
+### Hachure parameters
 
-1.  Open QGIS.
-2.  Go to `Plugins` -> `Manage and Install Plugins...`.
-3.  In the search bar, find `Slope Generator`.
-4.  Click the `Install Plugin` button.
-5.  After installation, the plugin icon will appear in your toolbar.
+All values are interpreted with respect to map scale (expressions use `@map_scale`).
 
-*(If the plugin is not yet published in the official QGIS repository, describe the installation process from a ZIP archive here).*
+- **Step**: spacing of the main strokes.
+- **Intermediate**: length of the first short stroke (Unreinforced/Forced).
+- **Gap**: gap between the first and second short strokes (Forced).
+- **Second**: length of the second short stroke (Forced).
+- **Trim**: trims the end of the line symbol in map units. Implemented as a data-defined override of the line’s “Trim End” property; helps neatly shorten stroke tips.
 
-## Feedback and Contribution
+### How to use
 
-*   If you find a bug, please create an [Issue](https://github.com/santerr80/slope_generator/issues) in this repository.
-*   Suggestions for improvements and new features are welcome.
-*   Pull requests to enhance the code are also welcome.
+1. Prepare your data as per the requirements above.
+2. Open the plugin from the QGIS toolbar (`Slope sign generator`).
+3. Select the slope line layer.
+4. Choose the slope pair ID field (e.g., `SLOPE_ID`).
+5. Select the categorization field (e.g., `TYPE`) — the plugin will create categories and apply a basic style.
+6. Pick the values for the crest and toe categories.
+7. Choose the slope type and set parameters: `Step`, `Intermediate`, `Gap`, `Second`, `Trim`.
+8. Click “Apply” — the style is appended to the symbol of the selected crest category.
 
-## License
+Notes:
 
-This plugin is distributed under the terms of the **GNU General Public License v2.0** or any later version.
+- Crest and toe category values must differ.
+- If the layer is not yet categorized, apply categorization first.
 
-## Author
+### Installation
 
-*   **santerr80**
-*   Email: [santerr80@gmail.com](mailto:santerr80@gmail.com)
+1. Open QGIS (minimum version: 3.0).
+2. Go to `Plugins` → `Manage and Install Plugins...`.
+3. Search for `Slope Generator`.
+4. Install the plugin; the toolbar icon will appear.
+
+Installing from ZIP: `Plugins` → `Install from ZIP`, then select the archive.
+
+### Limitations and tips
+
+- The layer must be line geometry; crest–toe geometries must be linkable via the pair ID.
+- Enter numeric values for `Step/Intermediate/Gap/Second/Trim`; the plugin validates input.
+- Map scale affects stroke lengths and spacing; verify appearance at target scales.
+
+### Feedback and contribution
+
+- Issues: `https://github.com/santerr80/slope_generator/issues`
+- Suggestions and pull requests are welcome.
+
+### License
+
+Distributed under **GNU GPL v2.0 or later**.
+
+### Author
+
+- **santerr80** — `santerr80@gmail.com`
+
+### Changelog
+
+- **0.2.0**: added hachure setup tools, Trim parameter support, updated UI and categorization logic.
