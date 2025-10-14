@@ -161,6 +161,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
 
         step = self.step.text()
         intermediate = self.intermediate.text()
+        intermediate_is_percent = '1' if self.checkBox.isChecked() else '0'
         gap = self.gap.text()
         second = self.second.text()
         trim = self.trim.text()
@@ -215,6 +216,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         )
         final_expression = final_expression.replace("__STEP__", step)
         final_expression = final_expression.replace("__INTERMEDIATE__", intermediate)
+        final_expression = final_expression.replace("__INTERMEDIATE_IS_PERCENT__", intermediate_is_percent)
         final_expression = final_expression.replace("__GAP__", gap)
         final_expression = final_expression.replace("__SECOND__", second)
         geometry_generator = QgsGeometryGeneratorSymbolLayer.create(
