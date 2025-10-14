@@ -3,10 +3,10 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Slope Generator
-qgisMinimumVersion=3.00
+name=Slope_Generator
+qgisMinimumVersion=3.34
 description=Plugin for generate dynamic slope hatching
-version=0.2.0
+version=0.2
 author=santerr80
 email=santerr80@gmail.com
 
@@ -20,13 +20,12 @@ repository=https://github.com/santerr80/slope_generator.git
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.2.0: Added hatching setup tools and Trim parameter support. Improved UI and categorization logic.
+changelog=0.2: Added hatching setup tools and Trim parameter support. Improved UI and categorization logic.
 
 # Tags are comma separated with spaces allowed
 tags=python, style, layer
 
 homepage=https://github.com/santerr80/slope_generator
-category=Plugins
 icon=icon.png
 # experimental flag
 experimental=False
@@ -44,4 +43,3 @@ category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False
-
