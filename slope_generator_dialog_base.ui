@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>SlopeGeneratorDialogBase</class>
  <widget class="QDialog" name="SlopeGeneratorDialogBase">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
-    <height>352</height>
+    <width>431</width>
+    <height>371</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,6 +21,9 @@
   </property>
   <property name="windowTitle">
    <string>Slope Generator</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
@@ -30,13 +36,25 @@
     <rect>
      <x>20</x>
      <y>320</y>
-     <width>161</width>
-     <height>25</height>
+     <width>391</width>
+     <height>41</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>24</number>
+    </property>
     <item>
      <widget class="QPushButton" name="pushButtonApply">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="text">
        <string>Apply </string>
       </property>
@@ -56,7 +74,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>181</width>
+     <width>201</width>
      <height>301</height>
     </rect>
    </property>
@@ -68,8 +86,8 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>161</width>
-      <height>268</height>
+      <width>181</width>
+      <height>271</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -139,10 +157,10 @@
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>220</x>
      <y>10</y>
-     <width>171</width>
-     <height>251</height>
+     <width>201</width>
+     <height>301</height>
     </rect>
    </property>
    <property name="title">
@@ -153,15 +171,15 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>151</width>
-      <height>221</height>
+      <width>181</width>
+      <height>271</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QLabel" name="mainStrokeStep">
        <property name="text">
-        <string>Main stroke step</string>
+        <string>Main stroke step (unit)</string>
        </property>
       </widget>
      </item>
@@ -175,21 +193,31 @@
      <item>
       <widget class="QLabel" name="intermediateStrokeLength">
        <property name="text">
-        <string>Intermediate stroke length</string>
+        <string>Intermediate stroke length (unit/%)</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="intermediate">
        <property name="text">
-        <string>2.5</string>
+        <string>50</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>% of total length inter. stroke</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="gapLength">
        <property name="text">
-        <string>Gap length for forced slope</string>
+        <string>Gap length for forced slope (unit)</string>
        </property>
       </widget>
      </item>
@@ -203,7 +231,7 @@
      <item>
       <widget class="QLabel" name="secondStroke">
        <property name="text">
-        <string>Second stroke for forced slope</string>
+        <string>Second stroke for forced slope (unit)</string>
        </property>
       </widget>
      </item>
@@ -217,7 +245,7 @@
      <item>
       <widget class="QLabel" name="trimLine">
        <property name="text">
-        <string>Trim end line style</string>
+        <string>Trim end line style (unit)</string>
        </property>
       </widget>
      </item>
