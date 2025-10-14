@@ -12,8 +12,8 @@ EXPRESSIONS = {
         )
       ),
       -- Translated into unit maps
-      'step', (@map_scale * 2) / 1000, -- The step of the main strokes
-      'intermediate', (@map_scale * 2.5) / 1000 -- The length of the additional stroke
+      'step', (@map_scale * __STEP__) / 1000, -- The step of the main strokes
+      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000 -- The length of the additional stroke
     ),
 
     if(
@@ -61,10 +61,10 @@ collect_geometries(
       'target_geom', geometry(
         get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
       ),
-      'step', (@map_scale * 2) / 1000, -- The step of the main strokes
-      'intermediate', (@map_scale * 2.5) / 1000, -- The length of the additional stroke
-      'gap', (@map_scale * 0.3) / 1000, -- The length of the gap
-      'second', (@map_scale * 0.6) / 1000 -- The length of the second short stroke
+      'step', (@map_scale * __STEP__) / 1000, -- The step of the main strokes
+      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000, -- The length of the additional stroke
+      'gap', (@map_scale * __GAP__) / 1000, -- The length of the gap
+      'second', (@map_scale * __SECOND__) / 1000 -- The length of the second short stroke
     ),
     if(
       map_get(@vars,'target_geom') is null,
@@ -137,7 +137,7 @@ collect_geometries(
         if(
             @target_geom is not null,
             with_variable(
-                'step', (@map_scale * 2) / 1000,
+                'step', (@map_scale * __STEP__) / 1000,
                 array_foreach(
                     generate_series(0, length($geometry), @step),
                     make_line(

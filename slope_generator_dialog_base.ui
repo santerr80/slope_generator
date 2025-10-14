@@ -148,7 +148,7 @@
    <property name="title">
     <string>Setup hatching</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -159,70 +159,70 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="mainStrokeStep">
        <property name="text">
         <string>Main stroke step</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="step">
        <property name="text">
         <string>2</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="intermediateStrokeLength">
        <property name="text">
         <string>Intermediate stroke length</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_2">
+      <widget class="QLineEdit" name="intermediate">
        <property name="text">
         <string>2.5</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="gapLength">
        <property name="text">
         <string>Gap length for forced slope</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_3">
+      <widget class="QLineEdit" name="gap">
        <property name="text">
         <string>0.3</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="secondStroke">
        <property name="text">
         <string>Second stroke for forced slope</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_4">
+      <widget class="QLineEdit" name="second">
        <property name="text">
         <string>0.6</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="trimLine">
        <property name="text">
-        <string>Trim end of line</string>
+        <string>Trim end line style</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_5">
+      <widget class="QLineEdit" name="trim">
        <property name="text">
         <string>0.5</string>
        </property>

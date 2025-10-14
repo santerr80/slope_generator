@@ -36,7 +36,10 @@ from qgis.core import (
     QgsLineSymbol,
     QgsMapLayerProxyModel,
     QgsCategorizedSymbolRenderer,
-    QgsRendererCategory
+    QgsRendererCategory,
+    QgsSimpleLineSymbolLayer,
+    QgsProperty, # <-- Импортируем QgsProperty
+    QgsLineSymbolLayer # <-- Импортируем QgsLineSymbolLayer для доступа к константам
 )
 from .slope_expressions import EXPRESSIONS
 
@@ -50,29 +53,15 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.iface = iface
 
-        # 1. Выпадающий список выбора линейного слоя
+        # ... (остальной код __init__ без изменений) ...
         self.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.LineLayer)
         self.mMapLayerComboBox.layerChanged.connect(self.on_layer_changed)
-
-        # 2. Выпадающий список выбора поля c ID откоса
-        # 3. Выпадающий список выбора поля для категоризации
         self.mCategorizationFieldComboBox.fieldChanged.connect(self.apply_categorization)
-
-        # 4. Выпадающий список для выбора категории верха откоса
-        # 5. Выпадающий список для выбора категории низа откоса
-        # (Эти списки заполняются автоматически после категоризации)
-
-        # 6. Выпадающий список для выбора типа отображения откоса
         self.comboBoxSlopeType.addItems(EXPRESSIONS.keys())
-
-        # 7. Кнопка применения стиля
         self.pushButtonApply.clicked.connect(self.apply_slope_style_to_category)
-
-        # 8. Кнопка отмены
         self.pushButtonCancel.clicked.connect(self.close)
-
-        # Первоначальное заполнение полей для уже выбранного слоя
         self.on_layer_changed(self.mMapLayerComboBox.currentLayer())
+
 
     def on_layer_changed(self, layer):
         """Обновляет списки полей при смене слоя."""
@@ -82,7 +71,6 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         else:
             self.mFieldComboBox.setLayer(None)
             self.mCategorizationFieldComboBox.setLayer(None)
-        # Очищаем списки категорий при смене слоя
         self.mTopSlopeCategoryComboBox.clear()
         self.mBottomSlopeCategoryComboBox.clear()
 
@@ -98,9 +86,6 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
 
         unique_values = layer.uniqueValues(layer.fields().lookupField(field_name))
         
-        # !!! ДОБАВЬТЕ ЭТУ СТРОКУ ДЛЯ ДИАГНОСТИКИ !!!
-        self.iface.messageBar().pushMessage(f"Плагин SlopeGenerator: Поле='{field_name}', Найденные уникальные значения={unique_values}")
-        
         categories = []
         for value in sorted(unique_values):
             symbol = QgsSymbol.defaultSymbol(layer.geometryType())
@@ -114,20 +99,14 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         layer.triggerRepaint()
         self.iface.layerTreeView().refreshLayerSymbology(layer.id())
 
-        # Заполняем выпадающие списки категорий
         self.mTopSlopeCategoryComboBox.clear()
         self.mBottomSlopeCategoryComboBox.clear()
         str_values = [str(v) for v in sorted(unique_values)]
-        self.iface.messageBar().pushMessage(f"Плагин SlopeGenerator: Поле='{field_name}', Найденные уникальные значения={str_values}")
         self.mTopSlopeCategoryComboBox.addItems(str_values)
         self.mBottomSlopeCategoryComboBox.addItems(str_values)
         
         self.iface.messageBar().pushMessage("Успех", f"Слой '{layer.name()}' стилизован по полю '{field_name}'", level=0)
 
-
-    # В файле slope_generator_dialog.py
-
-    # В файле slope_generator_dialog.py
 
     def apply_slope_style_to_category(self):
         """Добавляет генератор геометрии к символу выбранной категории."""
@@ -139,9 +118,23 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         bottom_slope_category_value = self.mBottomSlopeCategoryComboBox.currentText()
         slope_type = self.comboBoxSlopeType.currentText()
         
+        # --- Получаем параметры штриховки ---
+        step = self.step.text()
+        intermediate = self.intermediate.text()
+        gap = self.gap.text()
+        second = self.second.text()
+        trim = self.trim.text()
+
         # --- Проверки ---
         if not all([layer, slope_id_field, categorization_field, top_slope_category_value, bottom_slope_category_value, slope_type]):
             self.iface.messageBar().pushMessage("Ошибка", "Не все параметры выбраны", level=1)
+            return
+
+        try:
+            # Проверяем, что параметры штриховки являются числами
+            float(step); float(intermediate); float(gap); float(second); float(trim)
+        except ValueError:
+            self.iface.messageBar().pushMessage("Ошибка", "Параметры штриховки должны быть числами.", level=1)
             return
 
         if not isinstance(layer.renderer(), QgsCategorizedSymbolRenderer):
@@ -152,24 +145,42 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             self.iface.messageBar().pushMessage("Внимание", "Категории верха и низа откоса не должны совпадать", level=2)
             return
 
-        # --- Подготовка выражения и символа генератора геометрии ---
+        # --- Подготовка основного выражения (без обрезки) ---
         expression_template = EXPRESSIONS.get(slope_type)
         final_expression = expression_template.replace("__CAT_FIELD__", f"'{categorization_field}'")
         final_expression = final_expression.replace("__BOTTOM_CAT_VALUE__", f"'{bottom_slope_category_value}'")
         final_expression = final_expression.replace("__ID_FIELD__", f"'{slope_id_field}'")
+        final_expression = final_expression.replace("__STEP__", step)
+        final_expression = final_expression.replace("__INTERMEDIATE__", intermediate)
+        final_expression = final_expression.replace("__GAP__", gap)
+        final_expression = final_expression.replace("__SECOND__", second)
 
-        # 1. Создаем генератор геометрии, указывая только ТИП
-        props = {'symbol_type': 'Line'}
-        geometry_generator = QgsGeometryGeneratorSymbolLayer.create(props)
-
-        # 2. ЯВНО и ОТДЕЛЬНО устанавливаем для него выражение
+        # --- Создание основного генератора геометрии ---
+        geometry_generator = QgsGeometryGeneratorSymbolLayer.create({'symbol_type': 'Line'})
         geometry_generator.setGeometryExpression(final_expression)
 
-        # 3. Устанавливаем вложенный символ
-        simple_line = QgsLineSymbol.createSimple({'color': '0,0,0,255', 'width': '0.26'})
-        geometry_generator.setSubSymbol(simple_line)
+        # --- Создание вложенного символа с настройкой ОБРЕЗКИ ---
+        
+        # 1. Создаем слой простой линии
+        simple_line_layer = QgsSimpleLineSymbolLayer(color=QColor('black'), width=0.26)
+        
+        # 2. Создаем выражение для обрезки конца линии.
+        #    Оно вычислит расстояние обрезки в единицах карты на основе масштаба.
+        trim_expression_string = f"(@map_scale * {trim}) / 1000"
 
-        # --- ПЕРЕСОЗДАЕМ СПИСОК КАТЕГОРИЙ ---
+        # 3. Устанавливаем для слоя линии свойство "Смещение конечной точки" (trim_end)
+        #    с помощью data-defined override (переопределения на основе данных).
+        prop = QgsProperty.fromExpression(trim_expression_string)
+        simple_line_layer.setDataDefinedProperty(QgsLineSymbolLayer.PropertyTrimEnd, prop)
+
+        # 4. Создаем символ-контейнер для нашего настроенного слоя линии.
+        sub_symbol = QgsLineSymbol([simple_line_layer])
+        
+        # 5. Устанавливаем этот символ как вложенный для генератора геометрии.
+        geometry_generator.setSubSymbol(sub_symbol)
+
+
+        # --- Применяем созданный сложный стиль к категории ---
         new_categories = []
         original_renderer = layer.renderer()
         
@@ -182,13 +193,9 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             else:
                 new_categories.append(cat)
                 
-        # Создаем СОВЕРШЕННО НОВЫЙ рендерер на основе нашего нового списка категорий
         new_renderer = QgsCategorizedSymbolRenderer(categorization_field, new_categories)
-        
-        # Применяем этот новый рендерер к слою
         layer.setRenderer(new_renderer)
         
-        # Обновляем отображение слоя
         layer.triggerRepaint()
         self.iface.layerTreeView().refreshLayerSymbology(layer.id())
 
