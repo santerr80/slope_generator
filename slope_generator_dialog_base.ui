@@ -6,15 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>183</width>
-    <height>324</height>
+    <width>382</width>
+    <height>352</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Slope Generator</string>
   </property>
   <property name="sizeGripEnabled">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -22,8 +28,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>290</y>
+     <x>20</x>
+     <y>320</y>
      <width>161</width>
      <height>25</height>
     </rect>
@@ -45,77 +51,185 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>161</width>
-     <height>268</height>
+     <width>181</width>
+     <height>301</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label_layer">
-      <property name="text">
-       <string>Line layer with slope</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Field cotegory style</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QgsFieldComboBox" name="mCategorizationFieldComboBox"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_layer_2">
-      <property name="text">
-       <string>Field ID slope (SLOPE_ID)</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QgsFieldComboBox" name="mFieldComboBox"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_layer_3">
-      <property name="text">
-       <string>Top category</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="mTopSlopeCategoryComboBox"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_layer_4">
-      <property name="text">
-       <string>Bottom category</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="mBottomSlopeCategoryComboBox"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Select type of slope sign</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="comboBoxSlopeType"/>
-    </item>
-   </layout>
+   <property name="title">
+    <string>Setup sources</string>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>161</width>
+      <height>268</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_layer">
+       <property name="text">
+        <string>Line layer with slope</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Field cotegory style</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QgsFieldComboBox" name="mCategorizationFieldComboBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_layer_2">
+       <property name="text">
+        <string>Field ID slope (SLOPE_ID)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QgsFieldComboBox" name="mFieldComboBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_layer_3">
+       <property name="text">
+        <string>Top category</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="mTopSlopeCategoryComboBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_layer_4">
+       <property name="text">
+        <string>Bottom category</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="mBottomSlopeCategoryComboBox"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Select type of slope sign</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBoxSlopeType"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>10</y>
+     <width>171</width>
+     <height>251</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Setup hatching</string>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>151</width>
+      <height>221</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Main stroke step</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="text">
+        <string>2</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Intermediate stroke length</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_2">
+       <property name="text">
+        <string>2.5</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Gap length for forced slope</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_3">
+       <property name="text">
+        <string>0.3</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Second stroke for forced slope</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_4">
+       <property name="text">
+        <string>0.6</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Trim end of line</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_5">
+       <property name="text">
+        <string>0.5</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <customwidgets>
