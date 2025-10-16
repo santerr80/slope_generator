@@ -7,7 +7,8 @@ valid QGIS expressions:
 - __BOTTOM_CAT_VALUE__: category value representing the bottom slope side (string literal)
 - __ID_FIELD__: name of the feature id field to match bottom feature (string literal)
 - __STEP__: main stroke spacing, scaled by map scale
-- __INTERMEDIATE__: first short-stroke length
+- __INTERMEDIATE__: intermediate short-stroke value
+- __INTERMEDIATE_IS_PERCENT__: 1 treats __INTERMEDIATE__ as percent of full length, 0 as units
 - __GAP__: gap between first and second short strokes (forced slope)
 - __SECOND__: length of the second short stroke (forced slope)
 
@@ -30,7 +31,7 @@ EXPRESSIONS = {
       ),
       -- Translated into unit maps
       'step', (@map_scale * __STEP__) / 1000, -- The step of the main strokes
-      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000 -- The length of the additional stroke
+      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000 -- Units-based intermediate length (unused if percent mode)
     ),
 
     if(
@@ -56,11 +57,19 @@ EXPRESSIONS = {
           with_variable('pt', line_interpolate_point($geometry,@element),
           with_variable('end', closest_point(map_get(@vars,'target_geom'), @pt),
           with_variable('line', make_line(@pt,@end),
-            make_line(
-              @pt,
-              line_interpolate_point(
-                @line,
-                min(map_get(@vars,'intermediate'), length(@line))
+            with_variable(
+              'inter_len',
+              if(
+                __INTERMEDIATE_IS_PERCENT__ = 1,
+                length(@line) * (__INTERMEDIATE__) / 100,
+                map_get(@vars,'intermediate')
+              ),
+              make_line(
+                @pt,
+                line_interpolate_point(
+                  @line,
+                  min(@inter_len, length(@line))
+                )
               )
             )
           )))
@@ -79,7 +88,7 @@ collect_geometries(
         get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
       ),
       'step', (@map_scale * __STEP__) / 1000, -- The step of the main strokes
-      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000, -- The length of the additional stroke
+      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000, -- Units-based intermediate length (unused if percent mode)
       'gap', (@map_scale * __GAP__) / 1000, -- The length of the gap
       'second', (@map_scale * __SECOND__) / 1000 -- The length of the second short stroke
     ),
@@ -105,9 +114,17 @@ collect_geometries(
             with_variable('start', line_interpolate_point($geometry, @element),
               with_variable('end', closest_point(map_get(@vars,'target_geom'), @start),
                 with_variable('line', make_line(@start, @end),
-                  make_line(
-                    @start,
-                    line_interpolate_point(@line, min(map_get(@vars,'intermediate'), length(@line)))
+                  with_variable(
+                    'inter_len',
+                    if(
+                      __INTERMEDIATE_IS_PERCENT__ = 1,
+                      length(@line) * (__INTERMEDIATE__) / 100,
+                      map_get(@vars,'intermediate')
+                    ),
+                    make_line(
+                      @start,
+                      line_interpolate_point(@line, min(@inter_len, length(@line)))
+                    )
                   )
                 )
               )
@@ -121,7 +138,16 @@ collect_geometries(
           with_variable('start', line_interpolate_point($geometry, @element),
             with_variable('end', closest_point(map_get(@vars,'target_geom'), @start),
               with_variable('line', make_line(@start, @end),
-                with_variable('pos1', min(map_get(@vars,'intermediate'), length(@line)),
+                with_variable(
+                  'pos1',
+                  min(
+                    if(
+                      __INTERMEDIATE_IS_PERCENT__ = 1,
+                      length(@line) * (__INTERMEDIATE__) / 100,
+                      map_get(@vars,'intermediate')
+                    ),
+                    length(@line)
+                  ),
                   with_variable('pos2', @pos1 + map_get(@vars,'gap'),
                     if(
                       @pos2 < length(@line),
