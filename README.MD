@@ -16,18 +16,19 @@ This plugin automatically generates slope hachures based on line features that r
 
 ### Data requirements
 
-1. **Single line layer**: both crest and toe lines must be stored in the same vector line layer.
-2. **Categorization field**: an attribute distinguishing crest/toe (e.g., `TYPE` with values `top`/`bottom`, or code values).
-3. **Slope pair ID field**: a unique identifier for the crest–toe pair (e.g., `SLOPE_ID`) so lines can be linked.
+1.  **Single line layer**: both crest and toe lines must be stored in the same vector line layer.
+2.  **Coordinate system**: The vector layer's coordinate system must be in a UTM projection.
+3.  **Categorization field**: an attribute distinguishing crest/toe (e.g., `TYPE` with values `top`/`bottom`, or code values).
+4.  **Slope pair ID field**: a unique identifier for the crest–toe pair (e.g., `SLOPE_ID`) so lines can be linked.
 
 Example attribute table:
 
-| id | geometry   | TYPE     | SLOPE_ID |
+| id | geometry | TYPE | SLOPE_ID |
 | -- | ---------- | -------- | -------- |
-| 1  | LineString | top      | 101      |
-| 2  | LineString | bottom   | 101      |
-| 3  | LineString | top      | 102      |
-| 4  | LineString | bottom   | 102      |
+| 1 | LineString | top | 101 |
+| 2 | LineString | bottom | 101 |
+| 3 | LineString | top | 102 |
+| 4 | LineString | bottom | 102 |
 
 ### Supported slope types
 
@@ -49,26 +50,26 @@ All values are interpreted with respect to map scale (expressions use `@map_scal
 
 ### How to use
 
-1. Prepare your data as per the requirements above.
-2. Open the plugin from the QGIS toolbar (`Slope sign generator`).
-3. Select the slope line layer.
-4. Choose the slope pair ID field (e.g., `SLOPE_ID`).
-5. Select the categorization field (e.g., `TYPE`) — the plugin will create categories and apply a basic style.
-6. Pick the values for the crest and toe categories.
-7. Choose the slope type and set parameters: `Step`, `Intermediate`, `Gap`, `Second`, `Trim`. If needed, enable “% of total length inter. stroke” to express `Intermediate` as a percentage. For “Forced slope”, the second short stroke begins after the first (plus `Gap`) and respects the same percentage basis for the first stroke.
-8. Click “Apply” — the style is appended to the symbol of the selected crest category.
+1.  Prepare your data as per the requirements above.
+2.  Open the plugin from the QGIS toolbar (`Slope sign generator`).
+3.  Select the slope line layer.
+4.  Choose the slope pair ID field (e.g., `SLOPE_ID`).
+5.  Select the categorization field (e.g., `TYPE`) — the plugin will create categories and apply a basic style.
+6.  Pick the values for the crest and toe categories.
+7.  Choose the slope type and set parameters: `Step`, `Intermediate`, `Gap`, `Second`, `Trim`. If needed, enable “% of total length inter. stroke” to express `Intermediate` as a percentage. For “Forced slope”, the second short stroke begins after the first (plus `Gap`) and respects the same percentage basis for the first stroke.
+8.  Click “Apply” — the style is appended to the symbol of the selected crest category.
 
-Notes:
+**Notes:**
 
 - Crest and toe category values must differ.
 - If the layer is not yet categorized, apply categorization first.
 
 ### Installation
 
-1. Open QGIS (minimum version: 3.0).
-2. Go to `Plugins` → `Manage and Install Plugins...`.
-3. Search for `Slope Generator`.
-4. Install the plugin; the toolbar icon will appear.
+1.  Open QGIS (minimum version: 3.0).
+2.  Go to `Plugins` → `Manage and Install Plugins...`.
+3.  Search for `Slope Generator`.
+4.  Install the plugin; the toolbar icon will appear.
 
 Installing from ZIP: `Plugins` → `Install from ZIP`, then select the archive.
 
