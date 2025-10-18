@@ -2,7 +2,7 @@
 
 This plugin automatically generates slope hachures based on line features that represent the top (crest) and bottom (toe) of a slope. Styling is non-destructive via Geometry Generator; your source data remains unchanged.
 
-![Plugin demo](./assets/demo.gif)
+![Plugin demo](./assets/output.gif)
 
 ### Key features
 
