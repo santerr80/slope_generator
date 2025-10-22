@@ -67,13 +67,13 @@ class SlopeGenerator:
         # initialize locale
         locale = QSettings().value("locale/userLocale")[0:2]
         locale_path = os.path.join(
-            self.plugin_dir, "i18n", "SlopeGenerator_{}.qm".format(locale)
+            self.plugin_dir, "i18n", "{}.qm".format(locale)
         )
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
-            self.translator.load(locale_path)
-            QCoreApplication.installTranslator(self.translator)
+            if self.translator.load(locale_path):
+                QCoreApplication.installTranslator(self.translator)
 
         # Declare instance attributes
         self.actions = []

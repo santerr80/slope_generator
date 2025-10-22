@@ -39,6 +39,7 @@ from qgis.core import (
     QgsSymbol,
 )
 from qgis.PyQt import uic
+from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QColor
 from qgis.PyQt.QtWidgets import QDialog
 
@@ -59,6 +60,10 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
     - choose slope type and enter hachure parameters;
     - apply a Geometry Generator symbol layer with the expression to the chosen category.
     """
+    
+    def tr(self, message):
+        """Get the translation for a string using Qt translation API."""
+        return QCoreApplication.translate('SlopeGenerator', message)
     def __init__(self, iface, parent=None):
         """Constructor.
 
@@ -69,6 +74,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         super(SlopeGeneratorDialog, self).__init__(parent)
         self.setupUi(self)
         self.iface = iface
+        
         self.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.LineLayer)
         self.mMapLayerComboBox.layerChanged.connect(self.on_layer_changed)
         self.mCategorizationFieldComboBox.fieldChanged.connect(
@@ -78,6 +84,25 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.pushButtonApply.clicked.connect(self.apply_slope_style_to_category)
         self.pushButtonCancel.clicked.connect(self.close)
         self.on_layer_changed(self.mMapLayerComboBox.currentLayer())
+        
+        # Set translated text for UI elements (after all connections are made)
+        self.setWindowTitle(self.tr("Slope Generator"))
+        self.pushButtonApply.setText(self.tr("Apply"))
+        self.pushButtonCancel.setText(self.tr("Cancel"))
+        self.groupBox.setTitle(self.tr("Setup sources"))
+        self.groupBox_2.setTitle(self.tr("Setup hatching"))
+        self.label_layer.setText(self.tr("Line layer with slope"))
+        self.label_3.setText(self.tr("Field cotegory style"))
+        self.label_layer_2.setText(self.tr("Field ID slope (SLOPE_ID)"))
+        self.label_layer_3.setText(self.tr("Top category"))
+        self.label_layer_4.setText(self.tr("Bottom category"))
+        self.label_2.setText(self.tr("Select type of slope sign"))
+        self.mainStrokeStep.setText(self.tr("Main stroke step (unit)"))
+        self.intermediateStrokeLength.setText(self.tr("Intermediate stroke length (unit/%)"))
+        self.checkBox.setText(self.tr("% of total length inter. stroke"))
+        self.gapLength.setText(self.tr("Gap length for forced slope (unit)"))
+        self.secondStroke.setText(self.tr("Second stroke for forced slope (unit)"))
+        self.trimLine.setText(self.tr("Trim end line style (unit)"))
 
     def on_layer_changed(self, layer):
         """Update field lists when the layer changes.
@@ -137,7 +162,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.mBottomSlopeCategoryComboBox.addItems(str_values)
 
         self.iface.messageBar().pushMessage(
-            "Success", f"Layer '{layer.name()}' styled by field '{field_name}'", level=0
+            self.tr("Success"), f"Layer '{layer.name()}' styled by field '{field_name}'", level=0
         )
 
     def apply_slope_style_to_category(self):
@@ -176,7 +201,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             ]
         ):
             self.iface.messageBar().pushMessage(
-                "Error", "Not all parameters are selected", level=1
+                self.tr("Error"), self.tr("Not all parameters are selected"), level=1
             )
             return
 
@@ -187,21 +212,21 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             float(trim)
         except ValueError:
             self.iface.messageBar().pushMessage(
-                "Error", "Hatching parameters must be numeric.", level=1
+                self.tr("Error"), self.tr("Hatching parameters must be numeric."), level=1
             )
             return
 
         if not isinstance(layer.renderer(), QgsCategorizedSymbolRenderer):
             self.iface.messageBar().pushMessage(
-                "Error",
-                "Layer is not categorized. Apply categorization first.",
+                self.tr("Error"),
+                self.tr("Layer is not categorized. Apply categorization first."),
                 level=1,
             )
             return
 
         if top_slope_category_value == bottom_slope_category_value:
             self.iface.messageBar().pushMessage(
-                "Warning", "Top and bottom slope categories must differ", level=2
+                self.tr("Warning"), self.tr("Top and bottom slope categories must differ"), level=2
             )
             return
         expression_template = EXPRESSIONS.get(slope_type)
@@ -254,7 +279,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.iface.layerTreeView().refreshLayerSymbology(layer.id())
 
         self.iface.messageBar().pushMessage(
-            "Success",
+            self.tr("Success"),
             f"Slope style '{slope_type}' applied to category '{top_slope_category_value}'",
             level=0,
         )

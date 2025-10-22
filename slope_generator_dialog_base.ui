@@ -56,14 +56,14 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Apply </string>
+       <string >Apply </string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="pushButtonCancel">
       <property name="text">
-       <string>Cancel</string>
+       <string >Cancel</string>
       </property>
      </widget>
     </item>
@@ -79,7 +79,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Setup sources</string>
+    <string >Setup sources</string>
    </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
@@ -94,7 +94,7 @@
      <item>
       <widget class="QLabel" name="label_layer">
        <property name="text">
-        <string>Line layer with slope</string>
+        <string >Line layer with slope</string>
        </property>
       </widget>
      </item>
@@ -104,7 +104,7 @@
      <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Field cotegory style</string>
+        <string >Field cotegory style</string>
        </property>
       </widget>
      </item>
@@ -114,7 +114,7 @@
      <item>
       <widget class="QLabel" name="label_layer_2">
        <property name="text">
-        <string>Field ID slope (SLOPE_ID)</string>
+        <string >Field ID slope (SLOPE_ID)</string>
        </property>
       </widget>
      </item>
@@ -124,7 +124,7 @@
      <item>
       <widget class="QLabel" name="label_layer_3">
        <property name="text">
-        <string>Top category</string>
+        <string >Top category</string>
        </property>
       </widget>
      </item>
@@ -134,7 +134,7 @@
      <item>
       <widget class="QLabel" name="label_layer_4">
        <property name="text">
-        <string>Bottom category</string>
+        <string >Bottom category</string>
        </property>
       </widget>
      </item>
@@ -144,7 +144,7 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Select type of slope sign</string>
+        <string >Select type of slope sign</string>
        </property>
       </widget>
      </item>
@@ -164,7 +164,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Setup hatching</string>
+    <string >Setup hatching</string>
    </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
@@ -179,7 +179,7 @@
      <item>
       <widget class="QLabel" name="mainStrokeStep">
        <property name="text">
-        <string>Main stroke step (unit)</string>
+        <string >Main stroke step (unit)</string>
        </property>
       </widget>
      </item>
@@ -193,7 +193,7 @@
      <item>
       <widget class="QLabel" name="intermediateStrokeLength">
        <property name="text">
-        <string>Intermediate stroke length (unit/%)</string>
+        <string >Intermediate stroke length (unit/%)</string>
        </property>
       </widget>
      </item>
@@ -207,7 +207,7 @@
      <item>
       <widget class="QCheckBox" name="checkBox">
        <property name="text">
-        <string>% of total length inter. stroke</string>
+        <string >% of total length inter. stroke</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -217,7 +217,7 @@
      <item>
       <widget class="QLabel" name="gapLength">
        <property name="text">
-        <string>Gap length for forced slope (unit)</string>
+        <string >Gap length for forced slope (unit)</string>
        </property>
       </widget>
      </item>
@@ -231,7 +231,7 @@
      <item>
       <widget class="QLabel" name="secondStroke">
        <property name="text">
-        <string>Second stroke for forced slope (unit)</string>
+        <string >Second stroke for forced slope (unit)</string>
        </property>
       </widget>
      </item>
@@ -245,7 +245,7 @@
      <item>
       <widget class="QLabel" name="trimLine">
        <property name="text">
-        <string>Trim end line style (unit)</string>
+        <string >Trim end line style (unit)</string>
        </property>
       </widget>
      </item>
