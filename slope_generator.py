@@ -22,13 +22,14 @@
  ***************************************************************************/
 """
 import os.path
+from importlib import import_module
 
 from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
 # Initialize Qt resources from file resources.py
-from .resources import *
+import_module(".resources", package=__package__)
 
 # Import the code for the dialog
 from .slope_generator_dialog import SlopeGeneratorDialog

@@ -107,9 +107,8 @@ test: compile transcompile
 		nosetests -v --with-id --with-coverage --cover-package=. \
 		3>&1 1>&2 2>&3 3>&- || true
 	@echo "----------------------"
-	@echo "If you get a 'no module named qgis.core error, try sourcing"
-	@echo "the helper script we have provided first then run make test."
-	@echo "e.g. source run-env-linux.sh <path to qgis install>; make test"
+	@echo "If you get a 'no module named qgis.core' error, ensure QGIS"
+	@echo "Python bindings are on PYTHONPATH, then run make test."
 	@echo "----------------------"
 
 deploy: compile doc transcompile
@@ -185,16 +184,22 @@ transup:
 	@echo "------------------------------------------------"
 	@echo "Updating translation files with any new strings."
 	@echo "------------------------------------------------"
-	@chmod +x scripts/update-strings.sh
-	@scripts/update-strings.sh $(LOCALES)
+ifeq ($(LOCALES),)
+	@echo "No LOCALES configured in Makefile; skipping."
+else
+	pylupdate5 -noobsolete $(SOURCES) -ts $(foreach LOCALE,$(LOCALES),i18n/$(LOCALE).ts)
+endif
 
 transcompile:
 	@echo
 	@echo "----------------------------------------"
 	@echo "Compiled translation files to .qm files."
 	@echo "----------------------------------------"
-	@chmod +x scripts/compile-strings.sh
-	@scripts/compile-strings.sh $(LRELEASE) $(LOCALES)
+ifeq ($(LOCALES),)
+	@echo "No LOCALES configured in Makefile; skipping."
+else
+	$(foreach LOCALE,$(LOCALES),$(LRELEASE) i18n/$(LOCALE).ts;)
+endif
 
 transclean:
 	@echo
@@ -225,9 +230,8 @@ pylint:
 	@pylint --reports=n --rcfile=pylintrc . || true
 	@echo
 	@echo "----------------------"
-	@echo "If you get a 'no module named qgis.core' error, try sourcing"
-	@echo "the helper script we have provided first then run make pylint."
-	@echo "e.g. source run-env-linux.sh <path to qgis install>; make pylint"
+	@echo "If you get a 'no module named qgis.core' error, ensure QGIS"
+	@echo "Python bindings are on PYTHONPATH, then run make pylint."
 	@echo "----------------------"
 
 

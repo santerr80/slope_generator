@@ -14,8 +14,6 @@ import defusedxml.xmlrpc
 defusedxml.xmlrpc.monkey_patch()
 import xmlrpc.client
 
-standard_library.install_aliases()
-
 # Configuration
 PROTOCOL = "https"
 SERVER = "plugins.qgis.org"

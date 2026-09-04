@@ -17,8 +17,8 @@ import unittest
 from qgis.PyQt.QtGui import QIcon
 
 
-class SlopeGeneratorDialogTest(unittest.TestCase):
-    """Test rerources work."""
+class SlopeGeneratorResourcesTest(unittest.TestCase):
+    """Test resources work."""
 
     def setUp(self):
         """Runs before each test."""
