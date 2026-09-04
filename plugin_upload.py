@@ -7,8 +7,12 @@
 
 import getpass
 import sys
-import xmlrpc.client
 from optparse import OptionParser
+
+import defusedxml.xmlrpc
+
+defusedxml.xmlrpc.monkey_patch()
+import xmlrpc.client
 
 standard_library.install_aliases()
 
