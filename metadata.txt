@@ -4,13 +4,14 @@
 
 [general]
 name=Slope_Generator
-qgisMinimumVersion=3.34
+qgisMinimumVersion=4.0
+qgisMaximumVersion=4.99
 description=Plugin for generate dynamic slope hatching
-version=0.3
+version=0.4.0
 author=santerr80
 email=santerr80@gmail.com
 
-about=This plugin generates slope hachures via QGIS Geometry Generator. Non-destructive styling.
+about=This plugin generates slope hachures via QGIS Geometry Generator. Non-destructive styling. This branch targets QGIS 4 / Qt 6.
 
 tracker=https://github.com/santerr80/slope_generator/issues
 repository=https://github.com/santerr80/slope_generator.git
@@ -20,7 +21,7 @@ repository=https://github.com/santerr80/slope_generator.git
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.3: Added intermediate stroke percent mode.
+changelog=0.4.0: QGIS 4 / Qt 6 support branch.
 
 # Tags are comma separated with spaces allowed
 tags=python, style, layer
@@ -28,7 +29,7 @@ tags=python, style, layer
 homepage=https://github.com/santerr80/slope_generator
 icon=icon.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
