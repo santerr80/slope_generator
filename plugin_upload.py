@@ -12,7 +12,7 @@ from optparse import OptionParser
 import defusedxml.xmlrpc
 
 defusedxml.xmlrpc.monkey_patch()
-import xmlrpc.client
+import xmlrpc.client  # nosec B411
 
 # Configuration
 PROTOCOL = "https"
