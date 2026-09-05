@@ -12,7 +12,7 @@ This plugin automatically generates slope hachures based on line features that r
 - **Non-destructive styling**: uses the **Geometry Generator**; source features are not modified.
 - **Flexible configuration**: choose the layer, the slope pair ID field, and a categorization field.
 - **Percent-based intermediate strokes**: optionally define the first short stroke as a percentage of the full base stroke length; the second short stroke (Forced slope) starts after the first using the same basis when percent mode is enabled.
-- **Built-in slope types**: “Unreinforced slope”, “Forced slope”, “Cliff”. You can extend the set.
+- **Built-in slope types**: “Unreinforced slope”, “Forced slope”, “Cliff”, “Mineral resource slope”. You can extend the set.
 - **Scale awareness**: stroke lengths and spacing adapt to the current map scale.
 - **Quick categorization**: categories are created from a chosen field and colored for convenience.
 
@@ -37,6 +37,7 @@ Example attribute table:
 - **Unreinforced slope**: base strokes plus short intermediate strokes.
 - **Forced slope**: base strokes plus two series of short strokes with a gap.
 - **Cliff**: base strokes only.
+- **Mineral resource slope**: mining-documentation pattern along the crest: long stroke, gap, short stroke, gap, short stroke, gap, long stroke, long gap. Long strokes run to the toe; short strokes use the Intermediate length.
 
 Types are implemented with QGIS expressions and applied to the “crest” category, matching it with the “toe” by the pair ID.
 
@@ -44,9 +45,9 @@ Types are implemented with QGIS expressions and applied to the “crest” categ
 
 All values are interpreted with respect to map scale (expressions use `@map_scale`).
 
-- **Step**: spacing of the main strokes.
-- **Intermediate**: length of the first short stroke (Unreinforced/Forced). You can toggle “% of total length inter. stroke” to interpret this as a percentage of the full main stroke (from the feature to the opposite side) instead of fixed map units.
-- **Gap**: gap between the first and second short strokes (Forced).
+- **Step**: spacing of the main strokes. For Mineral resource slope this is the long gap after each long–short–short–long group.
+- **Intermediate**: length of the first short stroke (Unreinforced/Forced/Mineral resource). You can toggle “% of total length inter. stroke” to interpret this as a percentage of the full main stroke (from the feature to the opposite side) instead of fixed map units.
+- **Gap**: gap between the first and second short strokes (Forced), or the short gaps inside a Mineral resource group.
 - **Second**: length of the second short stroke (Forced).
 - **Trim**: trims the end of the line symbol in map units. Implemented as a data-defined override of the line’s “Trim End” property; helps neatly shorten stroke tips.
 
@@ -58,7 +59,7 @@ All values are interpreted with respect to map scale (expressions use `@map_scal
 4.  Choose the slope pair ID field (e.g., `SLOPE_ID`).
 5.  Select the categorization field (e.g., `TYPE`) — the plugin will create categories and apply a basic style.
 6.  Pick the values for the crest and toe categories.
-7.  Choose the slope type and set parameters: `Step`, `Intermediate`, `Gap`, `Second`, `Trim`. If needed, enable “% of total length inter. stroke” to express `Intermediate` as a percentage. For “Forced slope”, the second short stroke begins after the first (plus `Gap`) and respects the same percentage basis for the first stroke.
+7.  Choose the slope type and set parameters: `Step`, `Intermediate`, `Gap`, `Second`, `Trim`. If needed, enable “% of total length inter. stroke” to express `Intermediate` as a percentage. For “Forced slope”, the second short stroke begins after the first (plus `Gap`) and respects the same percentage basis for the first stroke. For “Mineral resource slope”, `Gap` is the short skip inside the group and `Step` is the long skip after the second long stroke.
 8.  Click “Apply” — the style is appended to the symbol of the selected crest category.
 
 **Notes:**
@@ -96,5 +97,6 @@ Distributed under **GNU GPL v2.0 or later**.
 
 ### Changelog
 
+- **0.4.0**: QGIS 4 / Qt 6 support branch; added “Mineral resource slope” (long–short–short–long with a long gap) for mining documentation.
 - **0.3.0**: percent-based intermediate strokes option; Block 3 (Forced) now starts from the end of Block 2 using the same basis when percent mode is enabled; documentation updated.
 - **0.2.0**: added hachure setup tools, Trim parameter support, updated UI and categorization logic.

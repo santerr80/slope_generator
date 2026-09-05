@@ -13,16 +13,16 @@ SlopeGenerator creates slope hachures using QGIS Geometry Generator expressions.
 
 Key capabilities:
 
-- Automatic main and intermediate strokes for multiple slope types.
+- Automatic main and intermediate strokes for multiple slope types, including the mining-documentation mineral-resource pattern (long, gap, short, gap, short, gap, long, long gap).
 - Percent-based intermediate strokes option: the first short stroke length can be set as a percentage of the full base stroke (distance to the opposite side). For Forced slope, the second short stroke begins after the first (plus gap), inheriting the same basis for the first stroke.
 - Scale-aware parameters using ``@map_scale``.
 
 Parameters
 ----------
 
-- Step: spacing of main strokes.
+- Step: spacing of main strokes; for Mineral resource slope, the long gap after each pattern group.
 - Intermediate: first short stroke length; can be in units or percent when the checkbox “% of total length inter. stroke” is enabled in the dialog.
-- Gap: gap between the first and second short strokes (Forced).
+- Gap: gap between the first and second short strokes (Forced), or short gaps in the Mineral resource group.
 - Second: length of the second short stroke (Forced).
 - Trim: trims the end of the line symbol (data-defined).
 

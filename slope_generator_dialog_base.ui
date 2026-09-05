@@ -179,7 +179,7 @@
      <item>
       <widget class="QLabel" name="mainStrokeStep">
        <property name="text">
-        <string>Main stroke step (unit)</string>
+        <string>Main stroke step / long gap (unit)</string>
        </property>
       </widget>
      </item>
@@ -217,7 +217,7 @@
      <item>
       <widget class="QLabel" name="gapLength">
        <property name="text">
-        <string>Gap length for forced slope (unit)</string>
+        <string>Gap length (unit)</string>
        </property>
       </widget>
      </item>

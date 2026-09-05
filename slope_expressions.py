@@ -7,9 +7,11 @@ valid QGIS expressions:
 - __BOTTOM_CAT_VALUE__: category value representing the bottom slope side (string literal)
 - __ID_FIELD__: name of the feature id field to match bottom feature (string literal)
 - __STEP__: main stroke spacing, scaled by map scale
+    (for Mineral resource slope: long gap after a long-short-short-long group)
 - __INTERMEDIATE__: intermediate short-stroke value
 - __INTERMEDIATE_IS_PERCENT__: 1 treats __INTERMEDIATE__ as percent of full length, 0 as units
-- __GAP__: gap between first and second short strokes (forced slope)
+- __GAP__: gap between first and second short strokes (forced slope);
+    short gap inside the mineral-resource pattern group
 - __SECOND__: length of the second short stroke (forced slope)
 
 All numeric placeholders are injected as numbers (no quotes). String
@@ -192,6 +194,114 @@ collect_geometries(
             make_line(make_point(0,0), make_point(0,0))
         )
     )
+)
+    """,
+    "Mineral resource slope": """
+collect_geometries(
+  with_variable(
+    'vars',
+    map(
+      'target_geom', geometry(
+        get_feature( @layer, map(__CAT_FIELD__, __BOTTOM_CAT_VALUE__, __ID_FIELD__, attribute(__ID_FIELD__)))
+      ),
+      'intermediate', (@map_scale * __INTERMEDIATE__) / 1000,
+      'gap', (@map_scale * __GAP__) / 1000,
+      -- Pattern along the crest: long, gap, short, gap, short, gap, long, long gap (step)
+      'cycle', (@map_scale * (3 * __GAP__ + __STEP__)) / 1000
+    ),
+    if(
+      map_get(@vars,'target_geom') is null,
+      make_line(make_point(0,0), make_point(0,0)),
+
+      array_cat(
+        array_cat(
+          array_cat(
+            -- Long stroke 1 at the start of each cycle
+            array_foreach(
+              generate_series(0, length($geometry), map_get(@vars,'cycle')),
+              make_line(
+                line_interpolate_point($geometry, @element),
+                closest_point(map_get(@vars,'target_geom'), line_interpolate_point($geometry, @element))
+              )
+            ),
+
+            -- Long stroke 2 after three short gaps
+            array_foreach(
+              generate_series(0, length($geometry), map_get(@vars,'cycle')),
+              with_variable('pos', @element + 3 * map_get(@vars,'gap'),
+                if(
+                  @pos > length($geometry),
+                  geom_from_wkt('LINESTRING EMPTY'),
+                  make_line(
+                    line_interpolate_point($geometry, @pos),
+                    closest_point(map_get(@vars,'target_geom'), line_interpolate_point($geometry, @pos))
+                  )
+                )
+              )
+            )
+          ),
+
+          -- Short stroke 1
+          array_foreach(
+            generate_series(0, length($geometry), map_get(@vars,'cycle')),
+            with_variable('pos', @element + map_get(@vars,'gap'),
+              if(
+                @pos > length($geometry),
+                geom_from_wkt('LINESTRING EMPTY'),
+                with_variable('start', line_interpolate_point($geometry, @pos),
+                  with_variable('end', closest_point(map_get(@vars,'target_geom'), @start),
+                    with_variable('line', make_line(@start, @end),
+                      with_variable(
+                        'inter_len',
+                        if(
+                          __INTERMEDIATE_IS_PERCENT__ = 1,
+                          length(@line) * (__INTERMEDIATE__) / 100,
+                          map_get(@vars,'intermediate')
+                        ),
+                        make_line(
+                          @start,
+                          line_interpolate_point(@line, min(@inter_len, length(@line)))
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        -- Short stroke 2
+        array_foreach(
+          generate_series(0, length($geometry), map_get(@vars,'cycle')),
+          with_variable('pos', @element + 2 * map_get(@vars,'gap'),
+            if(
+              @pos > length($geometry),
+              geom_from_wkt('LINESTRING EMPTY'),
+              with_variable('start', line_interpolate_point($geometry, @pos),
+                with_variable('end', closest_point(map_get(@vars,'target_geom'), @start),
+                  with_variable('line', make_line(@start, @end),
+                    with_variable(
+                      'inter_len',
+                      if(
+                        __INTERMEDIATE_IS_PERCENT__ = 1,
+                        length(@line) * (__INTERMEDIATE__) / 100,
+                        map_get(@vars,'intermediate')
+                      ),
+                      make_line(
+                        @start,
+                        line_interpolate_point(@line, min(@inter_len, length(@line)))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
 )
     """,
 }

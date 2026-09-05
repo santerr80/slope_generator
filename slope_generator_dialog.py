@@ -137,7 +137,9 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.mBottomSlopeCategoryComboBox.addItems(str_values)
 
         self.iface.messageBar().pushMessage(
-            "Success", f"Layer '{layer.name()}' styled by field '{field_name}'", level=0
+            "Success",
+            f"Layer '{layer.name()}' styled by field '{field_name}'",
+            level=Qgis.MessageLevel.Success,
         )
 
     def apply_slope_style_to_category(self):
@@ -176,7 +178,9 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             ]
         ):
             self.iface.messageBar().pushMessage(
-                "Error", "Not all parameters are selected", level=1
+                "Error",
+                "Not all parameters are selected",
+                level=Qgis.MessageLevel.Critical,
             )
             return
 
@@ -187,7 +191,9 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             float(trim)
         except ValueError:
             self.iface.messageBar().pushMessage(
-                "Error", "Hatching parameters must be numeric.", level=1
+                "Error",
+                "Hatching parameters must be numeric.",
+                level=Qgis.MessageLevel.Critical,
             )
             return
 
@@ -195,13 +201,15 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
             self.iface.messageBar().pushMessage(
                 "Error",
                 "Layer is not categorized. Apply categorization first.",
-                level=1,
+                level=Qgis.MessageLevel.Critical,
             )
             return
 
         if top_slope_category_value == bottom_slope_category_value:
             self.iface.messageBar().pushMessage(
-                "Warning", "Top and bottom slope categories must differ", level=2
+                "Warning",
+                "Top and bottom slope categories must differ",
+                level=Qgis.MessageLevel.Warning,
             )
             return
         expression_template = EXPRESSIONS.get(slope_type)
@@ -256,7 +264,7 @@ class SlopeGeneratorDialog(QDialog, FORM_CLASS):
         self.iface.messageBar().pushMessage(
             "Success",
             f"Slope style '{slope_type}' applied to category '{top_slope_category_value}'",
-            level=0,
+            level=Qgis.MessageLevel.Success,
         )
 
         self.close()
