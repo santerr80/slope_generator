@@ -69,7 +69,7 @@ All values are interpreted with respect to map scale (expressions use `@map_scal
 
 ### Installation
 
-1.  Open QGIS (minimum version: 3.0).
+1.  Open QGIS (minimum version: 4.0).
 2.  Go to `Plugins` → `Manage and Install Plugins...`.
 3.  Search for `Slope Generator`.
 4.  Install the plugin; the toolbar icon will appear.
